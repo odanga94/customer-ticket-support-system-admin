@@ -1,0 +1,46 @@
+.Button {
+    background-color: transparent;
+    /*border: none;*/
+    color: white;
+    outline: none;
+    cursor: pointer;
+    font: inherit;
+    padding: 10px;
+    margin: 10px;
+    font-weight: bold;
+    border-radius: 30px;
+    border-width: 2px;
+    border-color: #505050;
+}
+
+.Button:first-of-type {
+    margin-left: 0;
+    /*padding-left: 0;*/
+}
+
+.Success {
+    color: #5C9210;
+}
+
+.Danger {
+    color: #944317;
+}
+
+.Edit {
+    background-color: red;
+    border-radius: 0px;
+    color: white;
+    border-width: 0px;  
+}
+
+.Save {
+    background-color: #7CB342;
+    border-radius: 0px;
+    color: white;
+    border-width: 0px;
+}
+
+.Button:disabled{
+    color: #ccc;
+    cursor: not-allowed;
+}

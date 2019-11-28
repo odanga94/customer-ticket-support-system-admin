@@ -1,0 +1,34 @@
+.ProfileContainer{
+    text-align: left;
+    display: flex;
+    flex-flow: column;
+    margin: "20px auto"
+}
+
+.ProfileData {
+    margin: 20px;
+    width: 80%;
+    text-align: center;
+    box-shadow: 0 2px 3px #ccc;
+    border: 1px solid #eee;
+    padding: 10px;
+    box-sizing: border-box
+}
+
+.Image {
+    margin: 20px;
+    width: 200px;
+    height: 200px;
+    background-color: #545A63;
+    border: 1px solid black;
+}
+
+
+@media (min-width: 600px){
+    .ProfileContainer{
+        flex-flow: row;
+    }
+    .ProfileData{
+        width: 500px;
+    }
+}
