@@ -42,7 +42,7 @@ class MyTickets extends Component {
         return(
             this.props.loading ? <Spinner/> : this.props.tickets.length > 0 ?
             <div style={{margin: "10% 5%"}}>
-                <h1 style={{textAlign: "left"}}>My Tickets</h1>
+                <h1 style={{textAlign: "left"}}>All Customer Tickets</h1>
                 <table className={styles.Table}>
                     <colgroup span="6"></colgroup>
                     <tbody>
@@ -68,7 +68,7 @@ class MyTickets extends Component {
                                     return <td key={identifier}>{ticket[identifier]}</td>
                                 })
                                 return(
-                                    <tr className={styles.dataRow} key={index} onClick={() => {this.props.goToTicket(ticket.id, this.getTicketRefNo(index))}}>
+                                    <tr className={styles.dataRow} key={index} onClick={() => {this.props.goToTicket(ticket.id, this.getTicketRefNo(index), ticket.status)}}>
                                         <td>{this.getTicketRefNo(index)}</td>
                                         {ticketData}
                                     </tr>

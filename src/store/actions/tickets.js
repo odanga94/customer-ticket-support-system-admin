@@ -21,26 +21,6 @@ const fetchTicketsFailed = (error) => {
     }
 }
 
-const postTicketStart = () => {
-    return {
-        type: actionTypes.POST_TICKET_START
-    }
-}
-
-const postTicketSucceeded = (id, tickets) => {
-    return {
-        type: actionTypes.POST_TICKET_SUCCEEDED,
-        tickets: tickets,
-        ticketId: id
-    }
-}
-
-const postTicketFailed = error => {
-    return {
-        type: actionTypes.POST_TICKET_FAILED,
-        error: error
-    }
-}
 
 const addReplyStart = () => {
     return {
@@ -82,21 +62,31 @@ const fetchRepliesFailed = (error) => {
     }
 }
 
+const finalizeTicketStart = () => {
+    return {
+        type: actionTypes.FINALIZE_TICKET_START
+    }
+}
+
+const finalizeTicketSucceeded = (response) => {
+    return {
+        type: actionTypes.FINALIZE_TICKET_SUCCEEDED,
+        response
+    }
+}
+
+const finalizeTicketFailed = (error) => {
+    return {
+        type: actionTypes.FINALIZE_TICKET_FAILED,
+        error
+    }
+}
+
 export default {
-    createTicket: () => {
-        return {
-            type: actionTypes.CREATE_TICKET
-        }
-    },
-    removeTicket: () => {
-        return {
-            type: actionTypes.REMOVE_TICKET
-        }
-    },
-    fetchTickets: (token, userId) => {
+    fetchTickets: (token) => {
         return dispatch => {
             dispatch(fetchTicketsStart());
-            const queryParams = '?auth=' + token + '&orderBy="userId"&equalTo="' + userId + '"';
+            const queryParams = '?auth=' + token;
             axios.get('/pendingTickets.json' + queryParams)
             .then(res => {
                 //console.log(res.data);
@@ -107,26 +97,24 @@ export default {
                         id: key
                     })
                 }
+                axios.get('/finalizedTickets.json' + queryParams)
+                    .then(res => {
+                        for (let key in res.data){
+                            fetchedTickets.push({
+                                ...res.data[key],
+                                id: key
+                            })
+                        }
+                        dispatch(fetchTicketsSucceeded(fetchedTickets));
+                    }).catch(err => {
+                        console.log(err);
+                        dispatch(fetchTicketsFailed(err))
+                    })
                 //console.log(fetchedTickets);
-                dispatch(fetchTicketsSucceeded(fetchedTickets));
             }).catch(err => {
                 dispatch(fetchTicketsFailed(err))
             })
         }
-    },
-    postTicket: (ticket, token) => {
-        return dispatch => {
-            dispatch(postTicketStart());
-            axios.post('./pendingTickets.json?auth=' + token, ticket)
-            .then((response) => {
-                console.log(response);
-                dispatch(postTicketSucceeded(response.data.name, ticket));
-            }).catch(error => {
-                console.log(error);
-                dispatch(postTicketFailed());
-            });
-        }
-        
     },
 
     addReply: (reply, token, ticketId) => {
@@ -144,25 +132,77 @@ export default {
         }
     },
 
-    fetchReplies: (token, ticketId) => {
+    fetchReplies: (token, ticketId, status) => {
         return dispatch => {
             dispatch(fetchRepliesStart());
             const queryParams = '?auth=' + token;
-            axios.get(`/pendingTickets/${ticketId}/replies.json` + queryParams)
-            .then(res => {
-                console.log(res.data);
-                const fetchedReplies = [];
-                for (let key in res.data){
-                    fetchedReplies.push({
-                        ...res.data[key],
-                        replyId: key
+            if (status === "pending"){
+                axios.get(`/pendingTickets/${ticketId}/replies.json` + queryParams)
+                    .then(res => {
+                        console.log(res.data);
+                        const fetchedReplies = [];
+                        for (let key in res.data){
+                            fetchedReplies.push({
+                                ...res.data[key],
+                                replyId: key
+                            })
+                        }
+                        //console.log(fetchedTickets);
+                        dispatch(fetchRepliesSucceeded(fetchedReplies));
+                    }).catch(err => {
+                        dispatch(fetchRepliesFailed(err))
                     })
-                }
-                //console.log(fetchedTickets);
-                dispatch(fetchRepliesSucceeded(fetchedReplies));
-            }).catch(err => {
-                dispatch(fetchRepliesFailed(err))
-            })
+            } else {
+                axios.get(`/finalizedTickets/${ticketId}/replies.json` + queryParams)
+                    .then(res => {
+                        console.log(res.data);
+                        const fetchedReplies = [];
+                        for (let key in res.data){
+                            fetchedReplies.push({
+                                ...res.data[key],
+                                replyId: key
+                            })
+                        }
+                        //console.log(fetchedTickets);
+                        dispatch(fetchRepliesSucceeded(fetchedReplies));
+                    }).catch(err => {
+                        dispatch(fetchRepliesFailed(err))
+                    })
+            }
+            
+        }
+    },
+
+    finalizeTicket: (token, ticketId, ticket) => {
+        return dispatch => {
+            dispatch(finalizeTicketStart());
+            const updatedTicket = {
+                ...ticket,
+                status: "finalized"
+            }
+            axios.put(`/finalizedTickets/${ticketId}/.json?auth=${token}`, updatedTicket)
+                .then(res => {
+                    console.log(res);
+                    axios.delete(`/pendingTickets/${ticketId}.json?auth=${token}`)
+                        .then(res => {
+                            console.log(res.data);
+                            dispatch(finalizeTicketSucceeded(res.data));
+                        }).catch(err => {
+                            console.log(err);
+                            dispatch(finalizeTicketFailed(err));
+                        })
+                    
+                }).catch(err => {
+                    console.log(err);
+                    dispatch(finalizeTicketFailed(err))
+                }) 
+        }
+    },
+
+    toggleDialogOpen: (bool) => {
+        return {
+            type: actionTypes.TOGGLE_DIALOG_OPEN,
+            open: bool
         }
     }
 }

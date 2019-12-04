@@ -9,7 +9,6 @@ const navigationItems = (props) => {
             { props.isAuthenticated ?
                 <Aux>
                     <NavigationItem link="/" active>Home</NavigationItem>
-                    <NavigationItem link="/my-account">My Account</NavigationItem>
                     <NavigationItem link="/logout">Log Out</NavigationItem> 
                 </Aux>
                 :

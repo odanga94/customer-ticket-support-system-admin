@@ -1,69 +1,38 @@
 import actionTypes from '../actions/actionTypes';
 
 const initialState = {
-    createTicket: false,
     tickets: [],
     loading: false,
-    postProcessLoading: false,
-    posted: false,
     addReplyLoading: false,
     replies: [],
     addReplyError: null,
     fetchRepliesError: null,
     fetchRepliesLoading: false,
+    finalizeTicketLoading: false,
+    finalizeTicketResponse: {},
+    finalizeTicketError: null,
+    dialogOpen: false,
+    finalized: false
 }
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case actionTypes.CREATE_TICKET:
-            return {
-                ...state,
-                createTicket: true,
-                posted: false
-            }
-        case actionTypes.REMOVE_TICKET:
-            return {
-                ...state,
-                createTicket: false
-            }
         case actionTypes.FETCH_TICKETS_START:
             return {
                 ...state,
-                loading: true
+                loading: true,
+                finalized: false
             }
         case actionTypes.FETCH_TICKETS_SUCCEEDED:
             return {
                 ...state,
                 loading: false,
-                tickets: action.tickets
+                tickets: action.tickets,
             }
         case actionTypes.FETCH_TICKETS_FAILED:
             return {
                 ...state,
                 loading: false
-            }
-        case actionTypes.POST_TICKET_START:
-            return {
-                ...state,
-                postProcessLoading: true
-            }
-        case actionTypes.POST_TICKET_SUCCEEDED:
-            const newTicket = {
-                ...action.tickets,
-                id: action.ticketId
-            }
-
-            return {
-                ...state,
-                postProcessLoading: false,
-                posted: true,
-                createTicket: false,
-                tickets: state.tickets.concat(newTicket)
-            }
-        case actionTypes.POST_TICKET_FAILED:
-            return {
-                ...state,
-                postProcessLoading: false
             }
         case actionTypes.ADD_REPLY_START:
             return {
@@ -98,6 +67,31 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 fetchRepliesError: action.fetchRepliesError,
                 fetchRepliesLoading: false
+            }
+        case actionTypes.FINALIZE_TICKET_START:
+            return {
+                ...state,
+                finalizeTicketLoading: true
+            }
+        case actionTypes.FINALIZE_TICKET_SUCCEEDED:
+            return {
+                ...state,
+                finalizeTicketResponse: action.response,
+                finalizeTicketLoading: false,
+                dialogOpen: false,
+                finalized: true
+            }
+        case actionTypes.FINALIZE_TICKET_FAILED:
+            return {
+                ...state,
+                finalizeTicketError: action.error,
+                finalizeTicketLoading: false,
+                dialogOpen: false
+            }
+        case actionTypes.TOGGLE_DIALOG_OPEN:
+            return {
+                ...state,
+                dialogOpen: action.open
             }
         default:
             return state;

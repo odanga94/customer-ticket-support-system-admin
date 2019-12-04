@@ -9,13 +9,11 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import authReducer from './store/reducers/auth';
 import ticketsReducer from './store/reducers/tickets';
-import profileReducer from './store/reducers/profile';
 
 const rootReducer = combineReducers(
     {
         auth: authReducer, 
         tickets: ticketsReducer,
-        profile: profileReducer
     }
 );
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

@@ -5,6 +5,7 @@ import axios from '../../axios-global';
 import withErrorHandler from '../../hoc/WithErrorHandler/WithErrorHandler';
 import ticketActionCreators from '../../store/actions/tickets';
 import Spinner from '../../components/UI/Spinner/Spinner';
+import Button from '../../components/UI/Button/Button';
 import './NewReply.css';
 
 class NewReply extends Component {
@@ -20,9 +21,10 @@ class NewReply extends Component {
     addReplyHandler = () => {
         const dateObject = this.getFormattedDate();
         const reply = {
-            author: this.props.author,
+            author: "Admin",
             body: this.state.content,
             title: this.state.title,
+            isAdmin: true,
             ...dateObject
         }
         this.props.addReply(reply, this.props.token, this.props.ticketId);
@@ -78,7 +80,10 @@ class NewReply extends Component {
                         </select>
                     */
                 }
-                <button onClick={this.addReplyHandler}>Add Reply</button>
+                <div className="BtnContainer">
+                    <Button btnType="Save" clicked={() => { this.addReplyHandler() }} >ADD REPLY</Button>
+                    <Button btnType="Edit" clicked={() => { this.props.openDialog() }} >FINALIZE TICKET</Button>
+                </div>
             </div>
         );
     }
@@ -88,7 +93,6 @@ const mapStateToProps = (state) => {
     return {
         addReplyLoading: state.tickets.addReplyLoading,
         token: state.auth.token,
-        author: state.profile.profile.name
     }
 }
 
